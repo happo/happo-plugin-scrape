@@ -74,7 +74,7 @@ async function waitFor(page, selector, attempt = 0) {
 
 async function logIn(page, { url, username, password }) {
   await page.goto(url);
-  const usernameInputSelector = 'input[name=email]';
+  const usernameInputSelector = 'input[name=email],input[type=email]';
   const passwordInputSelector = 'input[type=password]';
   await waitFor(page, usernameInputSelector);
   await page.type(usernameInputSelector, username);
