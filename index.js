@@ -72,6 +72,17 @@ async function waitFor(page, selector, attempt = 0) {
   return waitFor(page, selector, attempt + 1);
 }
 
+async function logIn(page, { url, username, password }) {
+  await page.goto(url);
+  const usernameInputSelector = 'input[name=email]';
+  const passwordInputSelector = 'input[type=password]';
+  await waitFor(page, usernameInputSelector);
+  await page.type(usernameInputSelector, username);
+  await page.type(passwordInputSelector, password);
+  await page.keyboard.press('Enter');
+  await page.waitForNavigation({ waitUntil: 'load' });
+}
+
 module.exports = function happoScrapePlugin({ pages }) {
   return {
     customizeWebpackConfig: async config => {
@@ -80,8 +91,11 @@ module.exports = function happoScrapePlugin({ pages }) {
       const cssChunks = new Set();
       const result = [];
 
-      for (const { url, examples, wrapper = (html) => html } of pages) {
+      for (const { url, auth, examples, wrapper = (html) => html } of pages) {
         console.log(`\nLoading ${url}...`);
+        if (auth) {
+          await logIn(page, auth);
+        }
         await page.goto(url);
         for (const { name, selector, waitForSelector } of examples) {
           console.log(`Preparing selector ${selector}...`);
