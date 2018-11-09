@@ -88,42 +88,41 @@ async function logIn(page, { url, username, password }) {
 }
 
 module.exports = function happoScrapePlugin({ pages }) {
-  return {
-    customizeWebpackConfig: async config => {
-      const browser = await puppeteer.launch();
-      const page = await browser.newPage();
-      const cssChunks = new Set();
-      const result = [];
+  const plugin = {};
+  plugin.customizeWebpackConfig = async config => {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    const cssChunks = new Set();
+    const result = [];
 
-      for (const { url, auth, examples, wrapper = (html) => html } of pages) {
-        console.log(`\nLoading ${url}...`);
-        if (auth) {
-          await logIn(page, auth);
-        }
-        await page.goto(url);
-        for (const { name, selector, waitForSelector } of examples) {
-          console.log(`Preparing selector ${selector}...`);
-          await waitFor(page, selector);
-          if (waitForSelector) {
-            await waitFor(page, waitForSelector);
-          }
-          const html = await page.evaluate(sel => document.body.querySelector(sel).outerHTML, selector);
-          result.push({ html: wrapper(html), component: name });
-        }
-        (await extractCSSChunks(page)).forEach(chunk => cssChunks.add(chunk));
+    for (const { url, auth, examples, wrapper = (html) => html } of pages) {
+      console.log(`\nLoading ${url}...`);
+      if (auth) {
+        await logIn(page, auth);
       }
-      config.plugins.push(
-        new webpack.DefinePlugin({
-          HAPPO_DATA: JSON.stringify({
-            examples: result,
-            css: Array.from(cssChunks).join('\n'),
-          }),
+      await page.goto(url);
+      for (const { name, selector, waitForSelector } of examples) {
+        console.log(`Preparing selector ${selector}...`);
+        await waitFor(page, selector);
+        if (waitForSelector) {
+          await waitFor(page, waitForSelector);
+        }
+        const html = await page.evaluate(sel => document.body.querySelector(sel).outerHTML, selector);
+        result.push({ html: wrapper(html), component: name });
+      }
+      (await extractCSSChunks(page)).forEach(chunk => cssChunks.add(chunk));
+    }
+    config.plugins.push(
+      new webpack.DefinePlugin({
+        HAPPO_DATA: JSON.stringify({
+          examples: result,
         }),
-      );
-      await browser.close();
-      return config;
-    },
-
-    pathToExamplesFile: path.resolve(__dirname, 'happoExamples.js'),
+      }),
+    );
+    plugin.css = Array.from(cssChunks).join('\n');
+    await browser.close();
+    return config;
   };
+  plugin.pathToExamplesFile = path.resolve(__dirname, 'happoExamples.js');
+  return plugin;
 };

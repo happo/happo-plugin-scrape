@@ -2,8 +2,11 @@ const assert = require('assert');
 const plugin = require('.');
 
 const { USERNAME: username, PASSWORD: password } = process.env;
+if (!username || !password) {
+  throw new Error('Missing USERNAME and/or PASSWORD env variables');
+}
 
-const { customizeWebpackConfig } = plugin({
+const initializedPlugin = plugin({
   pages: [
     {
       url: 'https://brigade.com/profiles/henric-trotzig',
@@ -33,10 +36,11 @@ const { customizeWebpackConfig } = plugin({
 });
 
 async function test() {
-  const modifiedConfig = await customizeWebpackConfig({
+  const modifiedConfig = await initializedPlugin.customizeWebpackConfig({
     plugins: [],
     module: { rules: [] },
   });
+  assert.ok(!!initializedPlugin.css);
   assert.ok(!!modifiedConfig.plugins[0].definitions.HAPPO_DATA);
 }
 
