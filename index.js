@@ -32,6 +32,7 @@ function makeUrlsAbsolute(css, hrefOfCssFile) {
 
 async function extractCSSChunks(page) {
   const baseUrl = await page.evaluate(() => window.location.origin);
+  const protocol = await page.evaluate(() => window.location.protocol);
   const inline = await page.evaluate(() =>
     Array.from(document.querySelectorAll('style')).map(el => el.innerHTML),
   );
@@ -42,6 +43,9 @@ async function extractCSSChunks(page) {
   )).map(href => {
     if (href.startsWith('http')) {
       return href;
+    }
+    if (href.startsWith('//')) {
+      return protocol + href;
     }
     return baseUrl + href;
   });
