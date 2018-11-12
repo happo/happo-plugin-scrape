@@ -50,7 +50,7 @@ async function extractCSSChunks(page) {
     return baseUrl + href;
   });
   const external = await Promise.all(hrefs.map(async href => {
-    const content = await request(href);
+    const content = await request({ method: 'GET', url: href, gzip: true });
     return makeUrlsAbsolute(content, href);
   }));
   return external.concat(inline);
