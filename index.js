@@ -1,4 +1,4 @@
-const path = require('path');
+const nodePath = require('path');
 const url = require('url');
 
 const matchAll = require('string.prototype.matchall');
@@ -24,7 +24,9 @@ function makeUrlsAbsolute(css, hrefOfCssFile) {
     if (/^\//.test(potentialUrl)) {
       modified = modified.split(matched).join(`url(${baseUrl}${potentialUrl})`);
     } else {
-      modified = modified.split(matched).join(`url(${relativeBase}${potentialUrl})`);
+      // path.normalize will transform things like '/a/b/c/../d.js' to '/a/b/d.js'
+      const fullUrl = nodePath.normalize(`${relativeBase}${potentialUrl}`);
+      modified = modified.split(matched).join(`url(${fullUrl})`);
     }
   });
   return modified;
@@ -123,6 +125,6 @@ module.exports = function happoScrapePlugin({ pages }) {
     await browser.close();
     return config;
   };
-  plugin.pathToExamplesFile = path.resolve(__dirname, 'happoExamples.js');
+  plugin.pathToExamplesFile = nodePath.resolve(__dirname, 'happoExamples.js');
   return plugin;
 };

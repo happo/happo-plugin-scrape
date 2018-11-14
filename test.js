@@ -32,6 +32,15 @@ const initializedPlugin = plugin({
         },
       ],
     },
+    {
+      url: 'https://www.codeforamerica.org/',
+      examples: [
+        {
+          name: 'Header',
+          selector: 'header',
+        },
+      ],
+    },
   ],
 });
 
