@@ -36,7 +36,10 @@ async function extractCSSChunks(page) {
   const baseUrl = await page.evaluate(() => window.location.origin);
   const protocol = await page.evaluate(() => window.location.protocol);
   const inline = await page.evaluate(() =>
-    Array.from(document.querySelectorAll('style')).map(el => el.innerHTML),
+    Array.from(document.querySelectorAll('style')).map(el => {
+      return el.innerHTML || Array.from(el.sheet.cssRules).map((r) => r.cssText).join('\n')
+;
+    }),
   );
   const hrefs = (await page.evaluate(() =>
     Array.from(document.querySelectorAll('link[rel="stylesheet"][href]')).map(el =>

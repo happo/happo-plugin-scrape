@@ -9,6 +9,15 @@ if (!username || !password) {
 const initializedPlugin = plugin({
   pages: [
     {
+      url: 'https://www.calm.com/',
+      examples: [
+        {
+          name: 'Navigation',
+          selector: '.NavHeader',
+        },
+      ],
+    },
+    {
       url: 'https://brigade.com/profiles/henric-trotzig',
       auth: {
         url: 'https://brigade.com/log-in',
