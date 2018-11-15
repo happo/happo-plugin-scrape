@@ -21,6 +21,10 @@ function makeUrlsAbsolute(css, hrefOfCssFile) {
       // absolute url
       return;
     }
+    if (potentialUrl.startsWith('%23')) {
+      // potential `url()` inside an inlined svg
+      return;
+    }
     if (/^\//.test(potentialUrl)) {
       modified = modified.split(matched).join(`url(${baseUrl}${potentialUrl})`);
     } else {
