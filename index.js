@@ -7,7 +7,7 @@ const request = require('request-promise-native');
 const webpack = require('webpack');
 
 function makeUrlsAbsolute(css, hrefOfCssFile) {
-  const matches = Array.from(matchAll(css, /url\(['"]?([^)]+)['"]?\)/g));
+  const matches = Array.from(matchAll(css, /url\(['"]?([^)'"]+)['"]?\)/g));
   let modified = css;
   const { protocol, hostname, path } = url.parse(hrefOfCssFile);
   const baseUrl = [protocol, '//', hostname].join('');
