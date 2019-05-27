@@ -1,7 +1,9 @@
 # happo-plugin-scrape
 
 A [happo.io](https://github.com/happo/happo.io) plugin that allow you to grab
-Happo examples from a website.
+Happo examples from an existing website.
+
+*Note: If you came here looking to screenshot full pages, consider using [the full-page support](https://github.com/happo/happo.io#full-page-support) built into happo.io instead.*
 
 ## Usage
 
